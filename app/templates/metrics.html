@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Metrics · Telltale warning light detector</title>
+    <meta name="description" content="How a YOLO11s detector for car dashboard warning lights performs on real photos, and how it got there." />
+    <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/vendor/fonts/fonts.css" />
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/metrics.css" />
+    <script>
+      // Enable scroll reveals only when scripts run; give up on them if the page script never starts.
+      document.documentElement.classList.add("js");
+      if (new URLSearchParams(location.search).get("motion") === "off") document.documentElement.classList.add("no-motion");
+      setTimeout(function () {
+        if (!window.__appStarted) document.documentElement.classList.remove("js");
+      }, 4000);
+    </script>
+    <script type="module" src="/static/js/metrics.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Telltale, warning light detector: metrics">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 23.5a11 11 0 1 1 16 0" />
+            <path d="M16 16.5l4.8-5.8" />
+            <circle cx="16" cy="16.5" r="1.7" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="brand-text">
+            <span class="brand-name">Telltale</span>
+            <span class="brand-sub">Dashboard warning light detector</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="Pages">
+          <a href="/" aria-current="page">Metrics</a>
+          <a href="/demo">Demo</a>
+        </nav>
+        <span class="model-chip">R4 · YOLO11s · 960 px</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- hero -->
+      <section class="hero wrap">
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow is-verbatim" id="hero-eyebrow"></p>
+          <h1>Reading the warning lights on a dashboard</h1>
+          <p class="lead" id="hero-summary"></p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/demo">
+              Try the live demo
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+            <a class="btn" href="#journey">How it got here</a>
+          </div>
+        </div>
+        <div class="cluster panel" data-reveal style="--reveal-delay: 120ms">
+          <p class="eyebrow is-muted">The ten lights it detects</p>
+          <ul class="telltales" id="telltales"></ul>
+        </div>
+      </section>
+
+      <!-- headline numbers -->
+      <section class="wrap section" aria-labelledby="headline-title">
+        <h2 class="sr-only" id="headline-title">Headline results</h2>
+        <div class="gauges" id="headline"></div>
+      </section>
+
+      <nav class="wrap jump" aria-label="On this page" data-reveal>
+        <a href="#results">Results</a>
+        <a href="#compare">R2 vs R4</a>
+        <a href="#journey">Journey</a>
+        <a href="#classes">Per class</a>
+        <a href="#sizes">Light size</a>
+        <a href="#limitations">Limitations</a>
+      </nav>
+
+      <!-- result tables -->
+      <section class="wrap section" id="results" aria-labelledby="results-title">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Final model, R4</p>
+          <h2 id="results-title">Measured on real photos</h2>
+          <p class="lead" id="evaluation-text"></p>
+        </header>
+        <dl class="model-facts" id="model-facts" data-reveal></dl>
+        <div class="grid-2">
+          <figure class="panel card" id="table-040" data-reveal></figure>
+          <figure class="panel card" id="table-free" data-reveal style="--reveal-delay: 100ms"></figure>
+        </div>
+      </section>
+
+      <!-- before / after -->
+      <section class="wrap section" id="compare" aria-labelledby="compare-title">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Before and after</p>
+          <h2 id="compare-title">R2 against R4, at the same threshold</h2>
+          <p class="lead">
+            Same photos, same confidence threshold, two models. R4 is R2 fine-tuned on clean data, corrected labels and
+            hard negatives.
+          </p>
+        </header>
+        <div class="compare-grid">
+          <figure class="panel card" id="compare-chart" data-reveal></figure>
+          <figure class="panel card" id="object-level" data-reveal style="--reveal-delay: 100ms"></figure>
+        </div>
+      </section>
+
+      <!-- journey -->
+      <section class="wrap section" id="journey" aria-labelledby="journey-title">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">The journey</p>
+          <h2 id="journey-title">From the first model to this one</h2>
+          <p class="lead">Each stage, the number that mattered, and what it taught.</p>
+        </header>
+        <ol class="timeline" id="timeline"></ol>
+      </section>
+
+      <!-- per class -->
+      <section class="wrap section" id="classes" aria-labelledby="classes-title">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Per class</p>
+          <h2 id="classes-title">Which lights it finds, and which it misses</h2>
+        </header>
+        <div class="grid-2">
+          <figure class="panel card" id="per-class" data-reveal></figure>
+          <figure class="panel card" id="outcomes" data-reveal style="--reveal-delay: 100ms"></figure>
+        </div>
+      </section>
+
+      <!-- size and training -->
+      <section class="wrap section" id="sizes" aria-labelledby="sizes-title">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Light size</p>
+          <h2 id="sizes-title">Small lights are the hard part</h2>
+        </header>
+        <div class="grid-2">
+          <figure class="panel card" id="by-size" data-reveal></figure>
+          <section class="panel card" id="training" data-reveal style="--reveal-delay: 100ms"></section>
+        </div>
+      </section>
+
+      <!-- limitations -->
+      <section class="wrap section" id="limitations" aria-labelledby="limitations-title">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow is-red">Read before trusting</p>
+          <h2 id="limitations-title">Limitations</h2>
+        </header>
+        <ul class="limits" id="limits"></ul>
+      </section>
+
+      <section class="wrap section cta" data-reveal>
+        <div class="panel cta-card">
+          <div>
+            <h2>See it on a photo</h2>
+            <p class="lead">Upload a dashboard photo, or try a sample, and inspect each detection.</p>
+          </div>
+          <a class="btn btn-primary" href="/demo">
+            Open the demo
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>Telltale · YOLO11s warning light detector, model R4</span>
+        <span id="footer-note"></span>
+      </div>
+    </footer>
+
+    <noscript>
+      <p style="padding: 24px; text-align: center">This page renders its numbers from a data file and needs JavaScript.</p>
+    </noscript>
+  </body>
+</html>

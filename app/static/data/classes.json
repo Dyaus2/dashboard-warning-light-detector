@@ -1,0 +1,86 @@
+{
+  "note": "Class ids and full names match the model. Colours are used everywhere a class appears (overlay, list, charts).",
+  "disclaimer": "This tool identifies symbols. It is not a vehicle diagnosis.",
+  "classes": [
+    {
+      "id": 0,
+      "name": "Anti Lock Braking System",
+      "short": "ABS",
+      "family": "amber",
+      "color": "#f9ad26",
+      "meaning": "The anti-lock braking system has a fault or is switched off."
+    },
+    {
+      "id": 1,
+      "name": "Braking System Issue",
+      "short": "Brake",
+      "family": "red",
+      "color": "#ee233e",
+      "meaning": "The brake system needs attention, for example low brake fluid."
+    },
+    {
+      "id": 2,
+      "name": "Charging System Issue",
+      "short": "Charging",
+      "family": "red",
+      "color": "#fa7fb3",
+      "meaning": "The battery is not being charged properly."
+    },
+    {
+      "id": 3,
+      "name": "Check Engine",
+      "short": "Check engine",
+      "family": "amber",
+      "color": "#f9ed52",
+      "meaning": "The engine management system has detected a fault."
+    },
+    {
+      "id": 4,
+      "name": "Electronic Stability Problem -ESP-",
+      "short": "ESP",
+      "family": "amber",
+      "color": "#c08d50",
+      "meaning": "Electronic stability control has a fault or is intervening."
+    },
+    {
+      "id": 5,
+      "name": "Engine Overheating Warning Light",
+      "short": "Overheating",
+      "family": "red",
+      "color": "#cf2bb7",
+      "meaning": "Engine coolant temperature is too high."
+    },
+    {
+      "id": 6,
+      "name": "Low Engine Oil Warning Light",
+      "short": "Oil",
+      "family": "red",
+      "color": "#fd7316",
+      "meaning": "Engine oil pressure is low."
+    },
+    {
+      "id": 7,
+      "name": "Low Tire Pressure Warning Light",
+      "short": "Tyre pressure",
+      "family": "amber",
+      "color": "#abe841",
+      "meaning": "One or more tyres are under-inflated."
+    },
+    {
+      "id": 8,
+      "name": "Master warning light",
+      "short": "Master warning",
+      "family": "amber",
+      "color": "#fbe9c6",
+      "meaning": "A general alert; another light or message gives the detail."
+    },
+    {
+      "id": 9,
+      "name": "SRS-Airbag",
+      "short": "Airbag",
+      "family": "red",
+      "color": "#feb9bd",
+      "meaning": "The airbag or restraint system has a fault."
+    }
+  ]
+}

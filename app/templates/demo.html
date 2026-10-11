@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo · Telltale warning light detector</title>
+    <meta name="description" content="Upload a dashboard photo and see which warning lights the model recognises." />
+    <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/vendor/fonts/fonts.css" />
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/demo.css" />
+    <script>
+      // Enable scroll reveals only when scripts run; give up on them if the page script never starts.
+      document.documentElement.classList.add("js");
+      if (new URLSearchParams(location.search).get("motion") === "off") document.documentElement.classList.add("no-motion");
+      setTimeout(function () {
+        if (!window.__appStarted) document.documentElement.classList.remove("js");
+      }, 4000);
+    </script>
+    <script type="module" src="/static/js/demo.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Telltale, warning light detector: metrics">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 23.5a11 11 0 1 1 16 0" />
+            <path d="M16 16.5l4.8-5.8" />
+            <circle cx="16" cy="16.5" r="1.7" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="brand-text">
+            <span class="brand-name">Telltale</span>
+            <span class="brand-sub">Dashboard warning light detector</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="Pages">
+          <a href="/">Metrics</a>
+          <a href="/demo" aria-current="page">Demo</a>
+        </nav>
+        <span class="model-chip">R4 · YOLO11s · 960 px</span>
+      </div>
+    </header>
+
+    <main id="main" class="wrap demo">
+      <header class="page-head" data-reveal>
+        <p class="eyebrow">Live demo</p>
+        <h1>Show it a dashboard</h1>
+        <p class="lead">
+          Upload a photo of an instrument cluster. The model marks each warning light it recognises. Hover a box, or tab
+          to it, to see what the light is.
+        </p>
+      </header>
+
+      <div class="workspace" id="workspace" data-state="empty">
+        <div class="stage-col" data-reveal style="--reveal-delay: 80ms">
+          <div class="alert" id="alert" role="alert" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4 21.5 20H2.5z" />
+              <path d="M12 10v4.5M12 17.3v.2" />
+            </svg>
+            <p id="alert-text"></p>
+            <button type="button" class="btn btn-quiet" id="alert-retry" hidden>Try again</button>
+          </div>
+
+          <section class="stage panel" id="stage" aria-label="Photo">
+            <button type="button" class="dropzone" id="dropzone" aria-describedby="drop-formats">
+              <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+              <span class="drop-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 36.5a17 17 0 1 1 28 0" />
+                  <path d="M24 31V17M17.5 23l6.5-6.5 6.5 6.5" />
+                </svg>
+              </span>
+              <span class="drop-title">Drop a dashboard photo here</span>
+              <span class="drop-sub">or click to browse. You can also paste an image from the clipboard.</span>
+              <span class="drop-formats" id="drop-formats">JPEG, PNG or WebP, up to 15 MB. The photo stays on this computer.</span>
+            </button>
+
+            <div class="viewer">
+              <div class="frame" id="frame">
+                <img id="photo" alt="" />
+                <svg id="overlay" class="overlay" role="group" aria-label="Detected warning lights"></svg>
+                <div id="tags" class="tags" aria-hidden="true"></div>
+                <div id="card" class="label-card" aria-hidden="true">
+                  <div class="card-head">
+                    <span class="chip" id="card-chip"></span>
+                    <div class="card-names">
+                      <strong id="card-name"></strong>
+                      <span id="card-full"></span>
+                    </div>
+                  </div>
+                  <div class="card-conf">
+                    <span class="card-conf-label">Confidence</span>
+                    <span class="card-bar"><i id="card-fill"></i></span>
+                    <b id="card-pct"></b>
+                  </div>
+                  <p id="card-meaning"></p>
+                </div>
+                <div class="scan" aria-hidden="true">
+                  <div class="scan-grid"></div>
+                  <div class="scan-beam"></div>
+                  <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+                </div>
+                <p class="scan-status" id="scan-status" role="status"></p>
+              </div>
+              <div class="stage-bar">
+                <p class="meta" id="meta"></p>
+                <button type="button" class="btn btn-quiet" id="another">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5" />
+                  </svg>
+                  Try another photo
+                </button>
+              </div>
+            </div>
+
+            <input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden />
+          </section>
+
+          <section class="samples" aria-labelledby="samples-title">
+            <h2 class="eyebrow is-muted" id="samples-title">Or try a sample photo</h2>
+            <div class="sample-row" id="samples"></div>
+          </section>
+        </div>
+
+        <aside class="side" data-reveal style="--reveal-delay: 160ms">
+          <section class="panel results" id="results" aria-labelledby="results-title">
+            <div class="results-head">
+              <h2 id="results-title">Detections</h2>
+              <p class="results-count" id="count"></p>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <label for="threshold">Confidence threshold</label>
+                <output id="threshold-out" for="threshold">0.40</output>
+              </div>
+              <input type="range" id="threshold" min="0.10" max="0.90" step="0.01" value="0.40" />
+              <div class="control-scale" aria-hidden="true">
+                <span>0.10</span>
+                <span class="mark">0.40 recommended</span>
+                <span>0.90</span>
+              </div>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox" id="labels" />
+              <span class="switch-track" aria-hidden="true"></span>
+              <span>Show all labels</span>
+            </label>
+
+            <ol class="det-list" id="list"></ol>
+
+            <div class="empty-result" id="empty-result" hidden>
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="14" cy="14" r="8.5" />
+                <path d="M20.2 20.2 27 27M10.5 14h7" />
+              </svg>
+              <p id="empty-text"></p>
+              <button type="button" class="btn btn-quiet" id="empty-action" hidden></button>
+            </div>
+          </section>
+
+          <details class="panel legend" id="legend" open>
+            <summary>
+              <span>The ten lights it looks for</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+            <ul class="legend-list" id="legend-list"></ul>
+          </details>
+
+          <p class="disclaimer" id="disclaimer"></p>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>Telltale · YOLO11s warning light detector, model R4</span>
+        <span><a href="/">How well does it work? See the metrics</a></span>
+      </div>
+    </footer>
+  </body>
+</html>

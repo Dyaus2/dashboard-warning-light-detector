@@ -1,0 +1,22 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Claude Code session files and the build brief
+.claude/
+DASHBOARD_APP_BRIEF.md
+
+# Dataset archives (Roboflow exports; too large for GitHub and not needed to run the app)
+*.zip
+
+# Sample photos copied out of the dataset by tools/copy_samples.py (stock images, local demo only)
+app/static/samples/*
+!app/static/samples/.gitkeep
+
+# OS and editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

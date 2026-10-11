@@ -1,0 +1,246 @@
+{
+  "_note": "Measured results for the project. The metrics page renders from this file. Values are stored as the strings to display; do not round or recompute them.",
+
+  "model": {
+    "name": "R4",
+    "eyebrow": "YOLO11s · 9.4 M parameters · 960 px input",
+    "summary": "A detector for ten dashboard warning lights, scored on 49 real, un-augmented photos it never saw in training. This page shows how well it performs and what changed between the first model and this one.",
+    "facts": [
+      { "label": "Architecture", "value": "YOLO11s" },
+      { "label": "Parameters", "value": "9.4 M" },
+      { "label": "Input size", "value": "960 px" },
+      { "label": "Recommended confidence", "value": "0.40" }
+    ],
+    "evaluation": "49 real, un-augmented dashboard photos never used in training (18 validation, 31 test), 145 labelled lights."
+  },
+
+  "headline": [
+    {
+      "kind": "gauge",
+      "label": "Test precision",
+      "value": "85.3%",
+      "max": 100,
+      "context": "At confidence 0.40",
+      "secondary": "Validation 81.4%"
+    },
+    {
+      "kind": "gauge",
+      "label": "Test recall",
+      "value": "71.9%",
+      "max": 100,
+      "context": "At confidence 0.40",
+      "secondary": "Validation 85.7%"
+    },
+    {
+      "kind": "gauge",
+      "label": "Test mAP@50",
+      "value": "0.821",
+      "max": 1,
+      "context": "Threshold-free",
+      "secondary": "Validation 0.880"
+    },
+    {
+      "kind": "odometer",
+      "label": "Labelled lights",
+      "value": "145",
+      "context": "Evaluation set",
+      "secondary": "49 real photos: 18 validation, 31 test"
+    }
+  ],
+
+  "at_confidence_040": {
+    "title": "At the recommended confidence, 0.40",
+    "rows": [
+      { "set": "Validation", "images": "18 images", "objects": "56", "precision": "81.4%", "recall": "85.7%" },
+      { "set": "Test", "images": "31 images", "objects": "89", "precision": "85.3%", "recall": "71.9%" }
+    ]
+  },
+
+  "threshold_free": {
+    "title": "Threshold-free",
+    "subtitle": "Ultralytics validation, macro over classes",
+    "rows": [
+      { "set": "Validation", "images": "18 images", "precision": "79.2%", "recall": "83.8%", "map50": "0.880", "map5095": "0.618" },
+      { "set": "Test", "images": "31 images", "precision": "89.0%", "recall": "63.1%", "map50": "0.821", "map5095": "0.556" },
+      { "set": "Original test", "images": "13 images", "precision": "62.0%", "recall": "91.2%", "map50": "0.853", "map5095": "0.638" }
+    ],
+    "note": "Here precision and recall are taken at each set's own best-F1 threshold, which is why they swing between sets. The confidence-0.40 table is the fair comparison."
+  },
+
+  "r2_vs_r4": {
+    "series": [
+      { "key": "r2", "label": "R2" },
+      { "key": "r4", "label": "R4 (final)" }
+    ],
+    "default_confidence": "0.40",
+    "by_confidence": [
+      {
+        "confidence": "0.40",
+        "sets": [
+          {
+            "set": "Validation",
+            "precision": { "r2": "83.9%", "r4": "81.4%" },
+            "recall": { "r2": "83.9%", "r4": "85.7%" }
+          },
+          {
+            "set": "Test",
+            "precision": { "r2": "81.4%", "r4": "85.3%" },
+            "recall": { "r2": "64.0%", "r4": "71.9%" }
+          }
+        ]
+      },
+      {
+        "confidence": "0.25",
+        "sets": [
+          {
+            "set": "Validation",
+            "precision": { "r2": "72.3%", "r4": "71.4%" },
+            "recall": { "r2": "83.9%", "r4": "89.3%" }
+          },
+          {
+            "set": "Test",
+            "precision": { "r2": "70.8%", "r4": "79.5%" },
+            "recall": { "r2": "70.8%", "r4": "74.2%" }
+          }
+        ]
+      }
+    ]
+  },
+
+  "object_level": {
+    "basis": "145 lights, confidence 0.25",
+    "rows": [
+      { "label": "Correct", "r2": "76%", "r4": "80%", "better": "higher" },
+      { "label": "Wrong class", "r2": "6%", "r4": "5%", "better": "lower" },
+      { "label": "Missed", "r2": "19%", "r4": "15%", "better": "lower" },
+      { "label": "Extra boxes", "r2": "36", "r4": "30", "better": "lower" }
+    ],
+    "note": "R4 fixed 15 lights R2 missed and lost 9 it had."
+  },
+
+  "journey": [
+    {
+      "stage": "Reference",
+      "kind": "reference",
+      "done": "Public Roboflow model for this dataset",
+      "result": "mAP@50 98.7%, precision 98.9%, recall 96.3% (as published)",
+      "lesson": "Measured mostly on synthetic icon sheets, so not comparable with real photos.",
+      "key": { "value": "98.7%", "caption": "mAP@50, as published" }
+    },
+    {
+      "stage": "R1",
+      "kind": "model",
+      "done": "YOLO11n, 640 px, 44 epochs",
+      "result": "Its own validation: 99.0% / 95.6%. Original 13 real test photos: precision 64.1%, recall 49.4%, mAP@50 0.575",
+      "lesson": "Validation was about 80% synthetic; the real-photo score exposed the gap.",
+      "key": { "value": "49.4%", "caption": "recall on 13 real test photos" }
+    },
+    {
+      "stage": "R2",
+      "kind": "model",
+      "done": "YOLO11s at 960 px; validation and test rebuilt from real photos only; no horizontal flip",
+      "result": "Original 13 photos: precision 73.5%, recall 75.6%, mAP@50 0.846. New 31-photo test: 64.7% / 64.9% / 0.675",
+      "lesson": "Bigger input and honest evaluation. Recall on the original photos rose 26 points.",
+      "key": { "value": "75.6%", "caption": "recall on the original 13 photos" }
+    },
+    {
+      "stage": "R3",
+      "kind": "dropped",
+      "done": "Experiment: synthetic dashboards with small glowing icons",
+      "result": "No measurable gain (fine-tune control mAP@50 0.690 / 0.611 vs 0.641 / 0.586 with synthetic data, validation / test)",
+      "lesson": "Dropped. A tested idea that did not work.",
+      "key": { "value": "No gain", "caption": "from synthetic dashboards" }
+    },
+    {
+      "stage": "Label audit",
+      "kind": "data",
+      "done": "Reviewed 259 model-vs-label disagreements and 75 missed objects",
+      "result": "12 corrections: 6 wrong classes, 2 missing labels, 4 duplicated boxes",
+      "lesson": "Far fewer label errors than expected; most \"false\" detections were look-alike variants the dataset leaves unlabelled on purpose.",
+      "key": { "value": "12", "caption": "label corrections" }
+    },
+    {
+      "stage": "Clean data",
+      "kind": "data",
+      "done": "Replaced Roboflow's pre-rotated, mirrored, blurred copies with un-augmented originals",
+      "result": "R2 re-scored on clean, corrected photos: validation 73.9% / 76.2% / 0.840, test 69.6% / 67.5% / 0.774",
+      "lesson": "Part of the earlier gap was the evaluation images, not the model.",
+      "key": { "value": "0.774", "caption": "R2 test mAP@50, re-scored" }
+    },
+    {
+      "stage": "R4 (final)",
+      "kind": "final",
+      "done": "Fine-tuned R2 on clean originals + corrected labels + 458 hard negatives (close-ups of door-open, lane-departure, washer-fluid, power-steering, seat-belt, low-fuel symbols)",
+      "result": "Test at confidence 0.40: precision 81.4% -> 85.3%, recall 64.0% -> 71.9%. Test mAP@50 0.774 -> 0.821",
+      "lesson": "Negatives raised precision; recall on small lights improved from 64% to 72%.",
+      "key": { "value": "0.821", "caption": "test mAP@50, up from 0.774" }
+    }
+  ],
+
+  "per_class_test": {
+    "title": "Per class on the test set",
+    "rows": [
+      { "class_id": 0, "precision": "0.914", "recall": "0.800", "ap50": "0.885" },
+      { "class_id": 1, "precision": "0.757", "recall": "0.688", "ap50": "0.812" },
+      { "class_id": 2, "precision": "0.973", "recall": "0.786", "ap50": "0.858" },
+      { "class_id": 3, "precision": "0.640", "recall": "0.643", "ap50": "0.610" },
+      { "class_id": 4, "precision": "0.907", "recall": "0.333", "ap50": "0.418" },
+      { "class_id": 5, "precision": "0.955", "recall": "1.000", "ap50": "0.995" },
+      { "class_id": 6, "precision": "1.000", "recall": "0.647", "ap50": "0.919" },
+      { "class_id": 7, "precision": "0.749", "recall": "0.750", "ap50": "0.856" },
+      { "class_id": 8, "precision": "1.000", "recall": "0.000", "ap50": "0.995" },
+      { "class_id": 9, "precision": "1.000", "recall": "0.668", "ap50": "0.863" }
+    ]
+  },
+
+  "outcomes": {
+    "title": "Outcome of every labelled light",
+    "basis": "Validation + test, confidence 0.25",
+    "rows": [
+      { "class_id": 0, "correct": "14", "wrong_class": "0", "missed": "1" },
+      { "class_id": 1, "correct": "25", "wrong_class": "3", "missed": "3" },
+      { "class_id": 2, "correct": "17", "wrong_class": "2", "missed": "3" },
+      { "class_id": 3, "correct": "17", "wrong_class": "0", "missed": "5" },
+      { "class_id": 4, "correct": "4", "wrong_class": "1", "missed": "2" },
+      { "class_id": 5, "correct": "5", "wrong_class": "0", "missed": "0" },
+      { "class_id": 6, "correct": "17", "wrong_class": "1", "missed": "3" },
+      { "class_id": 7, "correct": "5", "wrong_class": "0", "missed": "1" },
+      { "class_id": 8, "correct": "1", "wrong_class": "0", "missed": "1" },
+      { "class_id": 9, "correct": "11", "wrong_class": "0", "missed": "3" }
+    ]
+  },
+
+  "by_size": {
+    "title": "Share found correctly, by light size",
+    "basis": "Box side in a 640 px image",
+    "rows": [
+      { "size": "under 24 px", "objects": "75", "r2": { "display": "64%", "fraction": 0.64 }, "r4": { "display": "72%", "fraction": 0.72 } },
+      { "size": "24-48 px", "objects": "54", "r2": { "display": "93%", "fraction": 0.93 }, "r4": { "display": "96%", "fraction": 0.96 } },
+      { "size": "48-96 px", "objects": "7", "r2": { "display": "100%", "fraction": 1 }, "r4": { "display": "100%", "fraction": 1 } },
+      { "size": "over 96 px", "objects": "9", "r2": { "display": "5 of 9", "found": 5, "of": 9 }, "r4": { "display": "3 of 9", "found": 3, "of": 9 } }
+    ]
+  },
+
+  "training": {
+    "title": "How R4 was trained",
+    "facts": [
+      { "label": "Starting point", "value": "R2 weights" },
+      { "label": "Training images", "value": "1,098", "detail": "85 real photos x4, 300 icon sheets, 458 negatives" },
+      { "label": "Input and batch", "value": "960 px, batch 8" },
+      { "label": "Optimiser", "value": "AdamW", "detail": "learning rate 0.0004" },
+      { "label": "Augmentation", "value": "No horizontal flip", "detail": "rotation 10 degrees, shear 4 degrees, mosaic on" },
+      { "label": "Stopping", "value": "Early-stopped after 24 epochs", "detail": "best at epoch 12" },
+      { "label": "Compute", "value": "About 15 minutes", "detail": "on a Tesla T4" }
+    ]
+  },
+
+  "limitations": [
+    "The evaluation set is small: 49 photos and 145 lights. A few objects move a percentage by several points.",
+    "ESP (7 evaluation objects) and master warning (2) are barely tested.",
+    "Small lights are the weak spot: 72% found below 24 px.",
+    "Large close-up icons got slightly worse in R4 (3 of 9 found, was 5 of 9).",
+    "The dataset does not label look-alike variants (ESP OFF, the yellow \"(!)\" light, the \"(P)\" parking-brake light), so the model is trained to ignore them.",
+    "Evaluation photos are web and stock images resized to 640 px; performance on phone photos of a real dashboard is not measured.",
+    "The model identifies symbols. It does not diagnose a vehicle."
+  ]
+}
